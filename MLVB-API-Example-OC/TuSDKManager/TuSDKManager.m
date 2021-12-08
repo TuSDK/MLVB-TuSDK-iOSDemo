@@ -75,6 +75,27 @@
 }
 
 #pragma mark - dealloc
+
+- (void)destoryTuSDKConfig
+{
+    [self destoryPipe];
+    [self destoryTuSDKView];
+}
+
+- (void)destoryPipe
+{
+    [_pipeOprationQueue runSync:^{
+    
+        if (self->_pipeline)
+        {
+            [self->_pipeline clearFilters];
+            [self->_pipeline close];
+            self->_pipeline = nil;
+        }
+        self->_imgcvt = nil;
+    }];
+}
+
 - (void)destoryTuSDKView
 {
     [_filterButton removeFromSuperview];

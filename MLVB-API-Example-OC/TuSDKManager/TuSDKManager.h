@@ -33,7 +33,11 @@ NS_ASSUME_NONNULL_BEGIN
  *  @param superView 滤镜视图需要展示的父视图，如果穿nil即不会默认添加上去，需要各自面板再添加到想要的view上
  */
 - (void)configTuSDKViewWithSuperView:(UIView*)superView;
-
+/**
+ * 资源释放
+ *
+ */
+- (void)destoryTuSDKConfig;
 
 /**
  Process a video sample and return result soon
