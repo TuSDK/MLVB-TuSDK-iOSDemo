@@ -10,10 +10,20 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSInteger, TuSDKPixelFormat)
+{
+    TuSDKPixelFormatNV12,
+    TuSDKPixelFormatBGRA,
+    TuSDKPixelFormatTexture2D
+};
+
 @interface TuSDKManager : NSObject
 
 @property (nonatomic, assign, readonly) BOOL isInitedTuSDK; // 是否初始化SDK
 @property (nonatomic, assign, readonly) BOOL isInitFilterPipeline; // 是否初始化滤镜处理器
+
+//视频帧类型
+@property (nonatomic, assign) TuSDKPixelFormat pixelFormat;
 
 @property (nonatomic, assign) BOOL enableLiveSticker; // 是否开启动态贴纸 (默认: YES)
 @property (nonatomic, assign) BOOL enableLiveBeauty;  // 是否开启美肤功能 (默认: YES)
@@ -46,6 +56,16 @@ NS_ASSUME_NONNULL_BEGIN
  @return Video PixelBuffer
  */
 - (CVPixelBufferRef)syncProcessSampleBuffer:(CMSampleBufferRef)sampleBuffer;
+
+/**
+ Process a video sample and return result soon
+
+ @param texture2D  纹理ID
+ @param width 宽度
+ @param height 高度
+ @return texture2D 纹理
+ */
+- (GLuint)syncProcessTexture2D:(GLuint)texture2D width:(NSInteger)width height:(NSInteger)height;
 
 @end
 

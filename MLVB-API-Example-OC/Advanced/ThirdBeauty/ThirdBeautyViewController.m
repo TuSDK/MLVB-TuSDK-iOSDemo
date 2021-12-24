@@ -35,6 +35,8 @@
 #import "ThirdBeautyViewController.h"
 //#import "FUManager.h"
 
+#import "TuSDKManager.h"
+
 @interface ThirdBeautyViewController () <V2TXLivePusherObserver>
 @property (weak, nonatomic) IBOutlet UILabel *setBeautyLabel;
 @property (weak, nonatomic) IBOutlet UILabel *beautyNumLabel;
@@ -48,6 +50,11 @@
 
 @property (strong, nonatomic) V2TXLivePusher *livePusher;
 //@property (strong, nonatomic) FUBeautyParam *beautyParam;
+
+//是否在当前context
+@property (nonatomic, assign) BOOL isCurrentContext;
+
+@property (nonatomic, strong) EAGLContext *currentContext;
 
 @end
 
@@ -64,7 +71,7 @@
 
 - (V2TXLivePusher *)livePusher {
     if (!_livePusher) {
-        _livePusher = [[V2TXLivePusher alloc] initWithLiveMode:V2TXLiveMode_RTC];
+        _livePusher = [[V2TXLivePusher alloc] initWithLiveMode:V2TXLiveMode_RTMP];
         [_livePusher setObserver:self];
     }
     return _livePusher;
@@ -74,6 +81,13 @@
     [super viewDidLoad];
     [self setupDefaultUIConfig];
     [self addKeyboardObserver];
+    
+    [self initTuSDKConfig];
+}
+
+- (void)initTuSDKConfig
+{
+    [[TuSDKManager sharedManager] configTuSDKViewWithSuperView:self.view];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -108,7 +122,9 @@
     [self.livePusher startCamera:true];
     [self.livePusher startMicrophone];
     
-    [self.livePusher enableCustomVideoProcess:true pixelFormat:V2TXLivePixelFormatNV12 bufferType:V2TXLiveBufferTypePixelBuffer];
+//    [self.livePusher enableCustomVideoProcess:true pixelFormat:V2TXLivePixelFormatNV12 bufferType:V2TXLiveBufferTypePixelBuffer];
+    //纹理方案 - TuSDK
+    [self.livePusher enableCustomVideoProcess:true pixelFormat:V2TXLivePixelFormatTexture2D bufferType:V2TXLiveBufferTypeTexture];
     
     [self.livePusher startPush:[LiveUrl generateTRTCPushUrl:streamId]];
 }
@@ -140,6 +156,22 @@
 #pragma mark - V2TXLivePusherObserver
 - (void)onProcessVideoFrame:(V2TXLiveVideoFrame *)srcFrame dstFrame:(V2TXLiveVideoFrame *)dstFrame {
 //    [[FUManager shareManager] renderItemsToPixelBuffer:srcFrame.pixelBuffer];
+    
+//    _currentContext = [EAGLContext currentContext];
+//    if (!_isCurrentContext) {
+//        [TUPEngine Init:_currentContext];
+//        [TuSDKManager sharedManager].pixelFormat = TuSDKPixelFormatTexture2D;
+//        _isCurrentContext = YES;
+//        return;
+//    }
+    
+//    if ([TuSDKManager sharedManager].isInitFilterPipeline) {
+//        GLuint texture2D = [[TuSDKManager sharedManager] syncProcessTexture2D:srcFrame.textureId width:srcFrame.width height:srcFrame.height];
+//        dstFrame.bufferType = V2TXLiveBufferTypeTexture;
+//        dstFrame.pixelFormat = V2TXLivePixelFormatTexture2D;
+//        dstFrame.textureId = texture2D;
+//    }
+    
     dstFrame.bufferType = V2TXLiveBufferTypePixelBuffer;
     dstFrame.pixelFormat = V2TXLivePixelFormatNV12;
     dstFrame.pixelBuffer = srcFrame.pixelBuffer;
@@ -152,6 +184,7 @@
 - (void)dealloc {
 //    [[FUManager shareManager] destoryItems];
     [self removeKeyboardObserver];
+    [[TuSDKManager sharedManager] destoryTuSDKConfig];
 }
 
 #pragma mark - Notification

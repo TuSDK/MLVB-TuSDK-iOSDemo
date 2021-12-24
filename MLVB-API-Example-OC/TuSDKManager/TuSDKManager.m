@@ -40,6 +40,8 @@
     NSMutableArray<NSNumber *> *_filterChain; // 滤镜链[滤镜执行的先后顺序, 顺序改变会影响最终的效果。建议不要更改]
     NSMutableDictionary<NSNumber*, NSObject*> *_filterPropertys;
     
+    __weak TUPFPDisplayView *_displayView;
+    CGRect _displayViewRect;
 }
 
 
@@ -121,6 +123,8 @@
     [self destoryTuSDKView];
     _superView = superView;
     
+    
+    
     [self initModuleBtn];
     
     {
@@ -158,18 +162,6 @@
     _filterPropertys = [NSMutableDictionary dictionary];
     
     _pipeOutLock = [[NSLock alloc] init];
-    
-    [_pipeOprationQueue runSync:^{
-        
-        self->_imgcvt = [[TUPFPImage_CMSampleBufferCvt alloc] init];
-        self->_pipeline = [[TUPFilterPipe alloc] init];
-        TUPConfig *config = [[TUPConfig alloc] init];
-        [config setIntNumber:1 forKey:@"pbout"];
-        [self->_pipeline setConfig:config];
-        [self->_pipeline open];
-    }];
-    
-    _isInitFilterPipeline = YES;
 }
 
 
@@ -297,6 +289,40 @@
     }
     
     return filterIndex;
+}
+
+#pragma mark - setter
+- (void)setPixelFormat:(TuSDKPixelFormat)pixelFormat
+{
+    _pixelFormat = pixelFormat;
+    [_pipeOprationQueue runSync:^{
+        
+        //texture2D
+        if (self.pixelFormat == TuSDKPixelFormatTexture2D) {
+            self->_imgcvt = [[TUPFPImage_CMSampleBufferCvt alloc] initWithPixelFormatTexture2D];
+        } else if (self.pixelFormat == TuSDKPixelFormatNV12) {
+            self->_imgcvt = [[TUPFPImage_CMSampleBufferCvt alloc] init];
+        } else if (self.pixelFormat == TuSDKPixelFormatBGRA) {
+            self->_imgcvt = [[TUPFPImage_CMSampleBufferCvt alloc] initWithPixelFormatType_32BGRA];
+        }
+        self->_pipeline = [[TUPFilterPipe alloc] init];
+        TUPConfig *config = [[TUPConfig alloc] init];
+        [config setIntNumber:1 forKey:@"pbout"];
+        [self->_pipeline setConfig:config];
+        [self->_pipeline open];
+    }];
+    
+    TUPFPDisplayView* displayView = [[TUPFPDisplayView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(_superView.frame), CGRectGetHeight(_superView.frame) - 200)];
+    
+    [_superView insertSubview:displayView atIndex:0];
+    _displayView = displayView;
+    [_displayView setup];
+    
+    _displayViewRect = CGRectMake(0, 0, 1, 1);
+    
+    [self refreshSize];
+    
+    _isInitFilterPipeline = YES;
 }
 
 #pragma mark - TuFilterPanelViewDelegate
@@ -1365,21 +1391,196 @@
             isMarkSense = true;
         }
 
-        self->_pipeInImage = [self->_imgcvt convert:pixelBuffer withTimestamp:timeStampMs];
+        self->_pipeInImage = [self->_imgcvt convert:pixelBuffer withTimestamp:timeStampMs orientaion:180 flip:NO mirror:YES];
         [self->_pipeInImage setMarkSenceEnable:isMarkSense];
 
         [self->_pipeOutLock lock];
 
         self->_pipeOutImage = [self->_pipeline process:self->_pipeInImage];
 
+        TUPFPImage *outPutImage = [self->_imgcvt convertImage:self->_pipeOutImage];
 
         [self->_pipeOutLock unlock];
-
+        
     }];
     
     CVPixelBufferRef newPixelBuffer = [_pipeOutImage getCVPixelBuffer];
     
+    TUPFPImage *outPutImage = [[TUPFPImage alloc] initWithUIImage:[self imageFormPixelBuffer:newPixelBuffer]];
+    [self->_displayView update:outPutImage atRect:_displayViewRect];
+    
     return newPixelBuffer;
+}
+
+- (UIImage *)imageFormPixelBuffer:(CVPixelBufferRef)pixelBuffer
+{
+    CIImage *ciImage = [CIImage imageWithCVImageBuffer:pixelBuffer];
+    CIContext *temporaryContext = [CIContext contextWithOptions:nil];
+    CGImageRef videoImage = [temporaryContext createCGImage:ciImage fromRect:CGRectMake(0, 0, CVPixelBufferGetWidth(pixelBuffer), CVPixelBufferGetHeight(pixelBuffer))];
+    UIImage *resultImage = [UIImage imageWithCGImage:videoImage];
+
+    CGImageRelease(videoImage);
+    return resultImage;
+}
+
+- (GLuint)syncProcessTexture2D:(GLuint)texture2D width:(NSInteger)width height:(NSInteger)height
+{
+    if (!_isInitedTuSDK) {
+        @throw [NSException exceptionWithName:@"TuSDK-Error" reason:@"can't init sdk, pelease check TuSDKManager.h" userInfo:nil];
+        return 0;
+    }
+    
+    if (!_isInitFilterPipeline) {
+        @throw [NSException exceptionWithName:@"TuSDK-Error" reason:@"can't configSuperView, pelease check TuSDKManager.h" userInfo:nil];
+        return 0;
+    }
+    
+    [_pipeOprationQueue runSync:^{
+
+        bool isMarkSense = false;
+        if ([self->_pipeline getFilter:[self FilterIndex:TuFilterModel_ReshapeFace]]
+            || [self->_pipeline getFilter:[self FilterIndex:TuFilterModel_CosmeticFace]])
+        {
+            isMarkSense = true;
+        }
+
+        NSTimeInterval recordTime = [[NSDate date]timeIntervalSince1970] * 1000;
+        int64_t timeStampMs = (int64_t)recordTime;
+        
+        self->_pipeInImage = [self->_imgcvt convert:texture2D timestamp:timeStampMs width:width height:height];
+        [self->_pipeInImage setMarkSenceEnable:isMarkSense];
+        
+        [self->_pipeOutLock lock];
+
+        self->_pipeOutImage = [self->_pipeline process:self->_pipeInImage];
+
+        
+        [self->_pipeOutLock unlock];
+    }];
+    
+    GLuint outPutTexture = [_pipeOutImage getTextureID];
+        
+    return outPutTexture;
+}
+
+
+- (CGFloat)getRatioByType:(lsqRatioType)ratioType
+{
+    CGFloat ratio = 1.0f;
+    switch (ratioType)
+    {
+        case lsqRatio_1_1:
+            ratio = 1.0f / 1.0f;
+            break;
+        case lsqRatio_2_3:
+            ratio = 2.0f / 3.0f;
+            break;
+        case lsqRatio_3_4:
+            ratio = 3.0f / 4.0f;
+            break;
+        case lsqRatio_9_16:
+            ratio = 9.0f / 16.0f;
+            break;
+        case lsqRatio_3_2:
+            ratio = 3.0f / 2.0f;
+            break;
+        case lsqRatio_4_3:
+            ratio = 4.0f / 3.0f;
+            break;
+         case lsqRatio_16_9:
+            ratio = 16.0f / 9.0f;
+            break;
+
+        case lsqRatioOrgin:
+        default:
+            ratio = [[UIScreen mainScreen] bounds].size.width / ([[UIScreen mainScreen] bounds].size.height - 200);
+            break;
+    }
+    
+    return ratio;
+}
+
+- (void)refreshSize
+{
+    CGFloat ratio = [self getRatioByType:lsqRatioOrgin];
+    
+    CGFloat fullScreenRatio = [self getRatioByType:lsqRatioOrgin];
+    CGSize fullScreenSize = [UIScreen mainScreen].bounds.size;
+    {
+        CGSize cameraResolution = fullScreenSize;
+        float cameraRatio = cameraResolution.width / cameraResolution.height;
+        
+        if (fullScreenRatio < cameraRatio)
+        {
+            fullScreenSize.height = cameraResolution.height;
+            fullScreenSize.width = fullScreenSize.height * fullScreenRatio;
+        }
+        else
+        {
+            fullScreenSize.width = cameraResolution.width;
+            fullScreenSize.height = fullScreenSize.width / fullScreenRatio;
+        }
+    }
+    
+    CGSize outputSize = fullScreenSize;
+    
+    if (ratio < fullScreenRatio)
+    {
+        outputSize.height = fullScreenSize.height;
+        outputSize.width = outputSize.height * ratio;
+    }
+    else
+    {
+        outputSize.width = fullScreenSize.width;
+        outputSize.height = outputSize.width / ratio;
+    }
+    
+    CGFloat startRatio = [self getRatioByType:lsqRatioOrgin];
+    CGFloat completeRatio = ratio;
+    
+    CGSize startSize;
+    CGSize completeSize = outputSize;
+    
+    if (startRatio < fullScreenRatio)
+    {
+        startSize.height = fullScreenSize.height;
+        startSize.width = startSize.height * startRatio;
+    }
+    else
+    {
+        startSize.width = fullScreenSize.width;
+        startSize.height = startSize.width / startRatio;
+    }
+    
+    CGRect startRectNor = CGRectMake(0, 0, 1, 1);
+    startRectNor.size.height = fullScreenRatio / startRatio;
+    if (startRectNor.size.height != 1.0)
+    {
+        startRectNor.origin.y = 0.13;
+    }
+    
+    CGRect completeRectNor = CGRectMake(0, 0, 1, 1);
+    completeRectNor.size.height = fullScreenRatio / completeRatio;
+    if (completeRectNor.size.height != 1.0)
+    {
+        completeRectNor.origin.y = 0.13;
+    }
+    
+    TuTSAnimation *displayViewAnimation = [TuTSAnimation animWithDuration:0.25 tween:[TuTweenQuadEaseOut tween] block:Nil];
+    [displayViewAnimation startWithBlock:^(TuTSAnimation *anim, NSTimeInterval step) {
+        CGFloat progress = step;
+        
+        CGFloat x = startRectNor.origin.x + (completeRectNor.origin.x - startRectNor.origin.x) * progress;
+        CGFloat y = startRectNor.origin.y + (completeRectNor.origin.y - startRectNor.origin.y) * progress;
+        CGFloat w = startRectNor.size.width + (completeRectNor.size.width - startRectNor.size.width) * progress;
+        CGFloat h = startRectNor.size.height + (completeRectNor.size.height - startRectNor.size.height) * progress;
+        
+        self->_displayViewRect = CGRectMake(x, y, w, h);
+        
+        CGFloat sw = startSize.width + (completeSize.width - startSize.width) * progress;
+        CGFloat sh = startSize.height + (completeSize.height - startSize.height) * progress;
+        [self->_imgcvt setOutputSize:CGSizeMake(sw, sh)];
+    }];
 }
 
 @end

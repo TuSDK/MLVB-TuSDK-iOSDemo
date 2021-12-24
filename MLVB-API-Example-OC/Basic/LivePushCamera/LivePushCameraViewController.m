@@ -105,7 +105,7 @@
         return;
     }
     [self.livePusher setRenderMirror:V2TXLiveMirrorTypeAuto];
-    [self.livePusher setVideoQuality:V2TXLiveVideoResolution960x540 resolutionMode:V2TXLiveVideoResolutionModePortrait];
+//    [self.livePusher setVideoQuality:V2TXLiveVideoResolution960x540 resolutionMode:V2TXLiveVideoResolutionModePortrait];
     [self.livePusher setRenderView:self.view];
     [self.livePusher setAudioQuality:self.audioQulity];
     
@@ -162,7 +162,7 @@
     
     [self showAlertListWithArray:resolutionArr handler:^(int index) {
         V2TXLiveVideoResolution resolution = [resolutionDic[resolutionArr[index]] intValue];
-        [self.livePusher setVideoQuality:resolution resolutionMode:V2TXLiveVideoResolutionModePortrait];
+//        [self.livePusher setVideoQuality:resolution resolutionMode:V2TXLiveVideoResolutionModePortrait];
         [self.resolutonButton setTitle:resolutionArr[index] forState:UIControlStateNormal];
     }];
 }

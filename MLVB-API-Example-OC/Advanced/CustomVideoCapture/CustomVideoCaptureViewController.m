@@ -46,7 +46,7 @@
 
 - (V2TXLivePusher *)livePusher {
     if (!_livePusher) {
-        _livePusher = [[V2TXLivePusher alloc] initWithLiveMode:V2TXLiveMode_RTC];
+        _livePusher = [[V2TXLivePusher alloc] initWithLiveMode:V2TXLiveMode_RTMP];
     }
     return _livePusher;
 }
@@ -75,11 +75,17 @@
 {
 //    [[TuSDKManager sharedManager] setEnableLiveBeauty:YES];
 //    [[TuSDKManager sharedManager] setEnableLiveSticker:YES];
+    /**
+     V2TXLiveMode_RTMP 协议下在TuSDKManager.m里使用displayView渲染
+     V2TXLiveMode_RTC 协议下可以用腾讯自身的渲染，TuSDKManager里的displayView可隐藏
+     */
     [[TuSDKManager sharedManager] configTuSDKViewWithSuperView:self.view];
+    [TuSDKManager sharedManager].pixelFormat = TuSDKPixelFormatNV12;
 }
 
 - (void)dealloc {
     [self removeKeyboardObserver];
+    [[TuSDKManager sharedManager] destoryTuSDKConfig];
 }
 
 - (void)setupDefaultUIConfig {
