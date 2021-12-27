@@ -3,4 +3,54 @@
    uuid = "48B8B75A-1A7E-4A2B-8EC6-16ADEB3DA444"
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "6788DF25-18F1-4835-A03A-6EE9E9EAB811"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../pulse-av/src/filter/Image.mm"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1075"
+            endingLineNumber = "1075"
+            landmarkName = "ImageCVPixelBufferCvtImpl::convert(textureId, ts, width, height, mirror)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "6788DF25-18F1-4835-A03A-6EE9E9EAB811 - 447b7319c844056c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "pulsevideo::filter::ImageCVPixelBufferCvtImpl::convert(unsigned int, long long, int, int, bool)::$_5::operator()() const"
+                  moduleName = "TuSDKPulseFilter"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/liupengcheng/Documents/TuSDKWorkSpace/ios_sdk_lasque/pulse-av/src/filter/Image.mm"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1075"
+                  endingLineNumber = "1075"
+                  offsetFromSymbolStart = "596">
+               </Location>
+               <Location
+                  uuid = "6788DF25-18F1-4835-A03A-6EE9E9EAB811 - 447b7319c844056c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "pulsevideo::filter::ImageCVPixelBufferCvtImpl::convert(unsigned int, long long, int, int, bool)::$_5::operator()() const"
+                  moduleName = "TuSDKPulseFilter"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/liupengcheng/Documents/TuSDKWorkSpace/ios_sdk_lasque/pulse-av/src/filter/Image.mm"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1075"
+                  endingLineNumber = "1075"
+                  offsetFromSymbolStart = "580">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>

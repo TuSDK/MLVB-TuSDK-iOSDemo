@@ -22,7 +22,7 @@
      如果采用自定义采集方案，需要在此处添加 [TUPEngine Init:nil];
      
      */
-    [TUPEngine Init:nil];
+//    [TUPEngine Init:nil];
     
     return YES;
 }

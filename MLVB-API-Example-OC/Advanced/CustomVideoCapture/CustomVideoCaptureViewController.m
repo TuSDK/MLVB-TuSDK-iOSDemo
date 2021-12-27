@@ -31,6 +31,8 @@
 
 #import "TuSDKManager.h"
 
+#define RTMPURL @"rtmp://155883.livepush.myqcloud.com/live/tu_test?txSecret=3694b4d1e6054f630f29a04c3b30cb1d&txTime=61CEC446"
+
 @interface CustomVideoCaptureViewController () <CustomCameraHelperSampleBufferDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *streamIdLabel;
 @property (weak, nonatomic) IBOutlet UITextField *streamIdTextField;
@@ -111,7 +113,8 @@
     [self.livePusher startMicrophone];
     [self.customVideoCaputre startCameraCapture];
     
-    [self.livePusher startPush:[LiveUrl generateTRTCPushUrl:streamId]];
+//    [self.livePusher startPush:[LiveUrl generateTRTCPushUrl:streamId]];
+    [self.livePusher startPush:RTMPURL];
 }
 
 - (void)stopPush {
@@ -137,7 +140,7 @@
 
 - (void)onVideoSampleBuffer:(CMSampleBufferRef)videoBuffer {
     
-    
+        
     if (![TuSDKManager sharedManager].isInitFilterPipeline)
     {
         //CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(videoBuffer);

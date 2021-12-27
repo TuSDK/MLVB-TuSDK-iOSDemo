@@ -37,6 +37,8 @@
 
 #import "TuSDKManager.h"
 
+#define RTMPURL @"rtmp://155883.livepush.myqcloud.com/live/tu_test?txSecret=3694b4d1e6054f630f29a04c3b30cb1d&txTime=61CEC446"
+
 @interface ThirdBeautyViewController () <V2TXLivePusherObserver>
 @property (weak, nonatomic) IBOutlet UILabel *setBeautyLabel;
 @property (weak, nonatomic) IBOutlet UILabel *beautyNumLabel;
@@ -107,6 +109,8 @@
     self.setBeautyLabel.text = Localize(@"MLVB-API-Example.ThirdBeauty.beautyLevel");
     NSInteger value = self.setBeautySlider.value * 6;
     self.beautyNumLabel.text = [NSString stringWithFormat:@"%ld",value];
+    
+    [self startRenderView];
 }
 
 - (void)setupBeautySDK {
@@ -116,8 +120,8 @@
 //    [FUManager shareManager].trackFlipx = YES;
 }
 
-- (void)startPush:(NSString*)streamId {
-    self.title = streamId;
+- (void)startRenderView
+{
     [self.livePusher setRenderView:self.view];
     [self.livePusher startCamera:true];
     [self.livePusher startMicrophone];
@@ -125,8 +129,20 @@
 //    [self.livePusher enableCustomVideoProcess:true pixelFormat:V2TXLivePixelFormatNV12 bufferType:V2TXLiveBufferTypePixelBuffer];
     //纹理方案 - TuSDK
     [self.livePusher enableCustomVideoProcess:true pixelFormat:V2TXLivePixelFormatTexture2D bufferType:V2TXLiveBufferTypeTexture];
+}
+
+- (void)startPush:(NSString*)streamId {
+    self.title = streamId;
+//    [self.livePusher setRenderView:self.view];
+//    [self.livePusher startCamera:true];
+//    [self.livePusher startMicrophone];
+//
+////    [self.livePusher enableCustomVideoProcess:true pixelFormat:V2TXLivePixelFormatNV12 bufferType:V2TXLiveBufferTypePixelBuffer];
+//    //纹理方案 - TuSDK
+//    [self.livePusher enableCustomVideoProcess:true pixelFormat:V2TXLivePixelFormatTexture2D bufferType:V2TXLiveBufferTypeTexture];
     
-    [self.livePusher startPush:[LiveUrl generateTRTCPushUrl:streamId]];
+//    [self.livePusher startPush:[LiveUrl generateTRTCPushUrl:streamId]];
+    [self.livePusher startPush:RTMPURL];
 }
 
 - (void)stopPush {
@@ -157,24 +173,25 @@
 - (void)onProcessVideoFrame:(V2TXLiveVideoFrame *)srcFrame dstFrame:(V2TXLiveVideoFrame *)dstFrame {
 //    [[FUManager shareManager] renderItemsToPixelBuffer:srcFrame.pixelBuffer];
     
-//    _currentContext = [EAGLContext currentContext];
-//    if (!_isCurrentContext) {
-//        [TUPEngine Init:_currentContext];
-//        [TuSDKManager sharedManager].pixelFormat = TuSDKPixelFormatTexture2D;
-//        _isCurrentContext = YES;
-//        return;
-//    }
+    _currentContext = [EAGLContext currentContext];
+    if (!_isCurrentContext) {
+        [TUPEngine Init:_currentContext];
+        [TuSDKManager sharedManager].pixelFormat = TuSDKPixelFormatTexture2D;
+        _isCurrentContext = YES;
+        return;
+    }
     
-//    if ([TuSDKManager sharedManager].isInitFilterPipeline) {
-//        GLuint texture2D = [[TuSDKManager sharedManager] syncProcessTexture2D:srcFrame.textureId width:srcFrame.width height:srcFrame.height];
-//        dstFrame.bufferType = V2TXLiveBufferTypeTexture;
-//        dstFrame.pixelFormat = V2TXLivePixelFormatTexture2D;
-//        dstFrame.textureId = texture2D;
-//    }
+    if ([TuSDKManager sharedManager].isInitFilterPipeline) {
+        GLuint texture2D = [[TuSDKManager sharedManager] syncProcessTexture2D:srcFrame.textureId width:srcFrame.width height:srcFrame.height];
+        dstFrame.bufferType = V2TXLiveBufferTypeTexture;
+        dstFrame.pixelFormat = V2TXLivePixelFormatTexture2D;
+        dstFrame.textureId = texture2D;
+//        dstFrame.rotation = V2TXLiveRotation180;
+    }
     
-    dstFrame.bufferType = V2TXLiveBufferTypePixelBuffer;
-    dstFrame.pixelFormat = V2TXLivePixelFormatNV12;
-    dstFrame.pixelBuffer = srcFrame.pixelBuffer;
+//    dstFrame.bufferType = V2TXLiveBufferTypePixelBuffer;
+//    dstFrame.pixelFormat = V2TXLivePixelFormatNV12;
+//    dstFrame.pixelBuffer = srcFrame.pixelBuffer;
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {

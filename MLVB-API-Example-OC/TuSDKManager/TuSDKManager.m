@@ -42,6 +42,7 @@
     
     __weak TUPFPDisplayView *_displayView;
     CGRect _displayViewRect;
+    
 }
 
 
@@ -306,21 +307,28 @@
             self->_imgcvt = [[TUPFPImage_CMSampleBufferCvt alloc] initWithPixelFormatType_32BGRA];
         }
         self->_pipeline = [[TUPFilterPipe alloc] init];
-        TUPConfig *config = [[TUPConfig alloc] init];
-        [config setIntNumber:1 forKey:@"pbout"];
-        [self->_pipeline setConfig:config];
+        //如果数据帧类型为pixelbuffer，则需要添加pbout输出
+        if (self.pixelFormat != TuSDKPixelFormatTexture2D) {
+            TUPConfig *config = [[TUPConfig alloc] init];
+            [config setIntNumber:1 forKey:@"pbout"];
+            [self->_pipeline setConfig:config];
+        }
+        
         [self->_pipeline open];
     }];
     
-    TUPFPDisplayView* displayView = [[TUPFPDisplayView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(_superView.frame), CGRectGetHeight(_superView.frame) - 200)];
-    
-    [_superView insertSubview:displayView atIndex:0];
-    _displayView = displayView;
-    [_displayView setup];
-    
-    _displayViewRect = CGRectMake(0, 0, 1, 1);
-    
-    [self refreshSize];
+    if (self.pixelFormat != TuSDKPixelFormatTexture2D) {
+        TUPFPDisplayView* displayView = [[TUPFPDisplayView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(_superView.frame), CGRectGetHeight(_superView.frame) - 200)];
+        
+        [_superView insertSubview:displayView atIndex:0];
+        _displayView = displayView;
+        [_displayView setup];
+        
+        _displayViewRect = CGRectMake(0, 0, 1, 1);
+        
+        [self refreshSize];
+        
+    }
     
     _isInitFilterPipeline = YES;
 }
@@ -1384,28 +1392,28 @@
     
     [_pipeOprationQueue runSync:^{
 
+                
+        
         bool isMarkSense = false;
         if ([self->_pipeline getFilter:[self FilterIndex:TuFilterModel_ReshapeFace]]
             || [self->_pipeline getFilter:[self FilterIndex:TuFilterModel_CosmeticFace]])
         {
             isMarkSense = true;
         }
-
+        
         self->_pipeInImage = [self->_imgcvt convert:pixelBuffer withTimestamp:timeStampMs orientaion:180 flip:NO mirror:YES];
         [self->_pipeInImage setMarkSenceEnable:isMarkSense];
 
         [self->_pipeOutLock lock];
 
+        
         self->_pipeOutImage = [self->_pipeline process:self->_pipeInImage];
-
-        TUPFPImage *outPutImage = [self->_imgcvt convertImage:self->_pipeOutImage];
 
         [self->_pipeOutLock unlock];
         
     }];
     
     CVPixelBufferRef newPixelBuffer = [_pipeOutImage getCVPixelBuffer];
-    
     TUPFPImage *outPutImage = [[TUPFPImage alloc] initWithUIImage:[self imageFormPixelBuffer:newPixelBuffer]];
     [self->_displayView update:outPutImage atRect:_displayViewRect];
     

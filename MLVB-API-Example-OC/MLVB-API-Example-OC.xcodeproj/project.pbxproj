@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -71,6 +71,16 @@
 		88FC7854268C8C2D00768C53 /* RTCPushAndPlayAnchorViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88FC7852268C8C2D00768C53 /* RTCPushAndPlayAnchorViewController.xib */; };
 		88FC7859268C8F6E00768C53 /* RTCPushAndPlayAudienceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88FC7857268C8F6E00768C53 /* RTCPushAndPlayAudienceViewController.m */; };
 		88FC785A268C8F6E00768C53 /* RTCPushAndPlayAudienceViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88FC7858268C8F6E00768C53 /* RTCPushAndPlayAudienceViewController.xib */; };
+		A6636D4E2779661F0075D091 /* TuViews.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6636D492779661E0075D091 /* TuViews.framework */; platformFilter = ios; };
+		A6636D4F2779661F0075D091 /* TuViews.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A6636D492779661E0075D091 /* TuViews.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A6636D502779661F0075D091 /* TuCamera.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6636D4A2779661E0075D091 /* TuCamera.framework */; platformFilter = ios; };
+		A6636D512779661F0075D091 /* TuCamera.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A6636D4A2779661E0075D091 /* TuCamera.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A6636D522779661F0075D091 /* TuSDKPulseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6636D4B2779661F0075D091 /* TuSDKPulseCore.framework */; platformFilter = ios; };
+		A6636D532779661F0075D091 /* TuSDKPulseCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A6636D4B2779661F0075D091 /* TuSDKPulseCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A6636D542779661F0075D091 /* TuSDKPulse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6636D4C2779661F0075D091 /* TuSDKPulse.framework */; platformFilter = ios; };
+		A6636D552779661F0075D091 /* TuSDKPulse.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A6636D4C2779661F0075D091 /* TuSDKPulse.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A6636D562779661F0075D091 /* TuSDKPulseFilter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6636D4D2779661F0075D091 /* TuSDKPulseFilter.framework */; platformFilter = ios; };
+		A6636D572779661F0075D091 /* TuSDKPulseFilter.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A6636D4D2779661F0075D091 /* TuSDKPulseFilter.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A6957AF326CE602300062934 /* TuSDKManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A6957AF226CE602300062934 /* TuSDKManager.m */; };
 		A6957B1E26CE667E00062934 /* TuStickerBaseDatasets.m in Sources */ = {isa = PBXBuildFile; fileRef = A6957AFA26CE667E00062934 /* TuStickerBaseDatasets.m */; };
 		A6957B1F26CE667E00062934 /* TuStickerBasePanelView.m in Sources */ = {isa = PBXBuildFile; fileRef = A6957AFB26CE667E00062934 /* TuStickerBasePanelView.m */; };
@@ -94,16 +104,6 @@
 		A6957B3926CE675A00062934 /* TuParametersAdjustView.m in Sources */ = {isa = PBXBuildFile; fileRef = A6957B3726CE675A00062934 /* TuParametersAdjustView.m */; };
 		A6957B3C26CE67DC00062934 /* TuCameraFilterPackage.m in Sources */ = {isa = PBXBuildFile; fileRef = A6957B3B26CE67DC00062934 /* TuCameraFilterPackage.m */; };
 		A6957B3F26CE67F800062934 /* TuCustomSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = A6957B3E26CE67F800062934 /* TuCustomSlider.m */; };
-		A6957B4026CE682400062934 /* TuSDKPulse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6957AB226CE601200062934 /* TuSDKPulse.framework */; };
-		A6957B4126CE682400062934 /* TuSDKPulse.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A6957AB226CE601200062934 /* TuSDKPulse.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		A6957B4226CE682600062934 /* TuSDKPulseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6957AB326CE601200062934 /* TuSDKPulseCore.framework */; };
-		A6957B4326CE682600062934 /* TuSDKPulseCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A6957AB326CE601200062934 /* TuSDKPulseCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		A6957B4426CE682700062934 /* TuSDKPulseFilter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6957AB126CE601200062934 /* TuSDKPulseFilter.framework */; };
-		A6957B4526CE682700062934 /* TuSDKPulseFilter.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A6957AB126CE601200062934 /* TuSDKPulseFilter.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		A6957B4626CE682800062934 /* TuViews.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6957AAF26CE601200062934 /* TuViews.framework */; };
-		A6957B4726CE682800062934 /* TuViews.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A6957AAF26CE601200062934 /* TuViews.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		A6957B4826CE682B00062934 /* TuCamera.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6957AB026CE601200062934 /* TuCamera.framework */; };
-		A6957B4926CE682B00062934 /* TuCamera.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A6957AB026CE601200062934 /* TuCamera.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A6C3B4B826CEB29A00A56368 /* Localized.strings in Resources */ = {isa = PBXBuildFile; fileRef = A6C3B4AA26CEB29A00A56368 /* Localized.strings */; };
 		A6C3B4B926CEB29A00A56368 /* VideoDemo.strings in Resources */ = {isa = PBXBuildFile; fileRef = A6C3B4AC26CEB29A00A56368 /* VideoDemo.strings */; };
 		A6C3B4BA26CEB29A00A56368 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A6C3B4AE26CEB29A00A56368 /* InfoPlist.strings */; };
@@ -590,11 +590,11 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				A6957B4926CE682B00062934 /* TuCamera.framework in Embed Frameworks */,
-				A6957B4726CE682800062934 /* TuViews.framework in Embed Frameworks */,
-				A6957B4526CE682700062934 /* TuSDKPulseFilter.framework in Embed Frameworks */,
-				A6957B4126CE682400062934 /* TuSDKPulse.framework in Embed Frameworks */,
-				A6957B4326CE682600062934 /* TuSDKPulseCore.framework in Embed Frameworks */,
+				A6636D552779661F0075D091 /* TuSDKPulse.framework in Embed Frameworks */,
+				A6636D512779661F0075D091 /* TuCamera.framework in Embed Frameworks */,
+				A6636D4F2779661F0075D091 /* TuViews.framework in Embed Frameworks */,
+				A6636D532779661F0075D091 /* TuSDKPulseCore.framework in Embed Frameworks */,
+				A6636D572779661F0075D091 /* TuSDKPulseFilter.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -709,11 +709,11 @@
 		88FC7856268C8F6E00768C53 /* RTCPushAndPlayAudienceViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RTCPushAndPlayAudienceViewController.h; sourceTree = "<group>"; };
 		88FC7857268C8F6E00768C53 /* RTCPushAndPlayAudienceViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RTCPushAndPlayAudienceViewController.m; sourceTree = "<group>"; };
 		88FC7858268C8F6E00768C53 /* RTCPushAndPlayAudienceViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RTCPushAndPlayAudienceViewController.xib; sourceTree = "<group>"; };
-		A6957AAF26CE601200062934 /* TuViews.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TuViews.framework; sourceTree = "<group>"; };
-		A6957AB026CE601200062934 /* TuCamera.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TuCamera.framework; sourceTree = "<group>"; };
-		A6957AB126CE601200062934 /* TuSDKPulseFilter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TuSDKPulseFilter.framework; sourceTree = "<group>"; };
-		A6957AB226CE601200062934 /* TuSDKPulse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TuSDKPulse.framework; sourceTree = "<group>"; };
-		A6957AB326CE601200062934 /* TuSDKPulseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TuSDKPulseCore.framework; sourceTree = "<group>"; };
+		A6636D492779661E0075D091 /* TuViews.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TuViews.framework; path = TuSDKManager/TuSDK/TuViews.framework; sourceTree = "<group>"; };
+		A6636D4A2779661E0075D091 /* TuCamera.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TuCamera.framework; path = TuSDKManager/TuSDK/TuCamera.framework; sourceTree = "<group>"; };
+		A6636D4B2779661F0075D091 /* TuSDKPulseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TuSDKPulseCore.framework; path = TuSDKManager/TuSDK/TuSDKPulseCore.framework; sourceTree = "<group>"; };
+		A6636D4C2779661F0075D091 /* TuSDKPulse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TuSDKPulse.framework; path = TuSDKManager/TuSDK/TuSDKPulse.framework; sourceTree = "<group>"; };
+		A6636D4D2779661F0075D091 /* TuSDKPulseFilter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TuSDKPulseFilter.framework; path = TuSDKManager/TuSDK/TuSDKPulseFilter.framework; sourceTree = "<group>"; };
 		A6957AF126CE602300062934 /* TuSDKManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TuSDKManager.h; sourceTree = "<group>"; };
 		A6957AF226CE602300062934 /* TuSDKManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TuSDKManager.m; sourceTree = "<group>"; };
 		A6957AF426CE65C200062934 /* TuSDKFramework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TuSDKFramework.h; sourceTree = "<group>"; };
@@ -1252,24 +1252,24 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A6636D502779661F0075D091 /* TuCamera.framework in Frameworks */,
 				4723A7C426315FAA0094AC81 /* AVFoundation.framework in Frameworks */,
 				88167CEC2685BF97001D99DC /* libz.tbd in Frameworks */,
 				88167CEA2685BF7B001D99DC /* UIKit.framework in Frameworks */,
-				A6957B4826CE682B00062934 /* TuCamera.framework in Frameworks */,
-				A6957B4026CE682400062934 /* TuSDKPulse.framework in Frameworks */,
-				A6957B4626CE682800062934 /* TuViews.framework in Frameworks */,
 				4723A7BF26315F920094AC81 /* OpenGLES.framework in Frameworks */,
 				47ECB98C2626868400201FCB /* Accelerate.framework in Frameworks */,
+				A6636D522779661F0075D091 /* TuSDKPulseCore.framework in Frameworks */,
 				4723A7C026315F9C0094AC81 /* Accelerate.framework in Frameworks */,
 				40D550EC26A6A9D800FE9F13 /* libsqlite3.0.tbd in Frameworks */,
-				A6957B4226CE682600062934 /* TuSDKPulseCore.framework in Frameworks */,
 				47ECB98E2626868E00201FCB /* libresolv.tbd in Frameworks */,
+				A6636D4E2779661F0075D091 /* TuViews.framework in Frameworks */,
 				88167CE92685BF58001D99DC /* Foundation.framework in Frameworks */,
-				A6957B4426CE682700062934 /* TuSDKPulseFilter.framework in Frameworks */,
 				400C520226A67EE30036AC40 /* AssetsLibrary.framework in Frameworks */,
+				A6636D562779661F0075D091 /* TuSDKPulseFilter.framework in Frameworks */,
 				4723A7C526315FB10094AC81 /* libc++.tbd in Frameworks */,
 				47ECB9892626867C00201FCB /* libc++.tbd in Frameworks */,
 				4723A7C226315FA30094AC81 /* CoreMedia.framework in Frameworks */,
+				A6636D542779661F0075D091 /* TuSDKPulse.framework in Frameworks */,
 				5556F29B51895CA9074019FB /* TXLiteAVSDK_Professional.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1527,6 +1527,11 @@
 		88ED6FE02624364700C75B9D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A6636D4A2779661E0075D091 /* TuCamera.framework */,
+				A6636D4C2779661F0075D091 /* TuSDKPulse.framework */,
+				A6636D4B2779661F0075D091 /* TuSDKPulseCore.framework */,
+				A6636D4D2779661F0075D091 /* TuSDKPulseFilter.framework */,
+				A6636D492779661E0075D091 /* TuViews.framework */,
 				40D550EB26A6A9BF00FE9F13 /* libsqlite3.0.tbd */,
 				400C520126A67EE30036AC40 /* AssetsLibrary.framework */,
 				88D788572685D849004B2509 /* libsqlite3.tbd */,
@@ -1577,11 +1582,6 @@
 		A6957AAE26CE601200062934 /* TuSDK */ = {
 			isa = PBXGroup;
 			children = (
-				A6957AAF26CE601200062934 /* TuViews.framework */,
-				A6957AB026CE601200062934 /* TuCamera.framework */,
-				A6957AB126CE601200062934 /* TuSDKPulseFilter.framework */,
-				A6957AB226CE601200062934 /* TuSDKPulse.framework */,
-				A6957AB326CE601200062934 /* TuSDKPulseCore.framework */,
 			);
 			path = TuSDK;
 			sourceTree = "<group>";
