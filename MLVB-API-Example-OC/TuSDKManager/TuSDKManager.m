@@ -307,12 +307,9 @@
             self->_imgcvt = [[TUPFPImage_CMSampleBufferCvt alloc] initWithPixelFormatType_32BGRA];
         }
         self->_pipeline = [[TUPFilterPipe alloc] init];
-        //如果数据帧类型为pixelbuffer，则需要添加pbout输出
-        if (self.pixelFormat != TuSDKPixelFormatTexture2D) {
-            TUPConfig *config = [[TUPConfig alloc] init];
-            [config setIntNumber:1 forKey:@"pbout"];
-            [self->_pipeline setConfig:config];
-        }
+        TUPConfig *config = [[TUPConfig alloc] init];
+        [config setIntNumber:1 forKey:@"pbout"];
+        [self->_pipeline setConfig:config];
         
         [self->_pipeline open];
     }];
@@ -1458,9 +1455,11 @@
         self->_pipeInImage = [self->_imgcvt convert:texture2D timestamp:timeStampMs width:width height:height];
         [self->_pipeInImage setMarkSenceEnable:isMarkSense];
         
+        TUPFPImage *inputImage = [self->_imgcvt convertImage:self->_pipeInImage];
+        
         [self->_pipeOutLock lock];
 
-        self->_pipeOutImage = [self->_pipeline process:self->_pipeInImage];
+        self->_pipeOutImage = [self->_pipeline process:inputImage];
 
         
         [self->_pipeOutLock unlock];
