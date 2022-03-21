@@ -6,7 +6,7 @@
 //
 
 #import "AppDelegate.h"
-#import "TuSDKManager.h"
+#import "TTLiveMediator.h"
 @interface AppDelegate ()
 
 @end
@@ -16,21 +16,12 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [TXLiveBase setLicenceURL:LICENSEURL key:LICENSEURLKEY];
-    
-    [[TuSDKManager sharedManager] initSdkWithAppKey:TuSDKAPPKET];
-    /**
-     如果采用自定义采集方案，需要在此处添加 [TUPEngine Init:nil];
-     
-     */
-//    [TUPEngine Init:nil];
-    
+    [TTLiveMediator setupWithAppKey:@"35ae2a66cce6fd38-04-ewdjn1"];
     return YES;
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
-    // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-    [TUPEngine Terminate];
+    [TTLiveMediator terminate];
 }
-
 
 @end

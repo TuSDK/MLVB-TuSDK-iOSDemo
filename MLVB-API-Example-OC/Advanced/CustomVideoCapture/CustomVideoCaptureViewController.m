@@ -28,11 +28,8 @@
 
 #import "CustomVideoCaptureViewController.h"
 #import "CustomCameraHelper.h"
-
-#import "TuSDKManager.h"
-
-#define RTMPURL @"rtmp://155883.livepush.myqcloud.com/live/tu_test?txSecret=3694b4d1e6054f630f29a04c3b30cb1d&txTime=61CEC446"
-
+#import "TTLiveMediator.h"
+#import "TTViewManager.h"
 @interface CustomVideoCaptureViewController () <CustomCameraHelperSampleBufferDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *streamIdLabel;
 @property (weak, nonatomic) IBOutlet UITextField *streamIdTextField;
@@ -48,7 +45,10 @@
 
 - (V2TXLivePusher *)livePusher {
     if (!_livePusher) {
-        _livePusher = [[V2TXLivePusher alloc] initWithLiveMode:V2TXLiveMode_RTMP];
+        _livePusher = [[V2TXLivePusher alloc] initWithLiveMode:V2TXLiveMode_RTC];
+        [_livePusher setRenderMirror:V2TXLiveMirrorTypeEnable];
+        V2TXLiveVideoEncoderParam *param = [[V2TXLiveVideoEncoderParam alloc] initWith:(V2TXLiveVideoResolution960x540)];
+        [_livePusher setVideoQuality:param];
     }
     return _livePusher;
 }
@@ -67,27 +67,17 @@
     [self addKeyboardObserver];
     [self.customVideoCaputre checkPermission];
     [self.customVideoCaputre createSession];
+    [TTLiveMediator setupContext:nil];
+    [[TTLiveMediator shareInstance] setPixelFormat:TTVideoPixelFormat_YUV];
     
-    //配置TuSDK
-    [self initTuSDKConfig];
-    
-}
-
-- (void)initTuSDKConfig
-{
-//    [[TuSDKManager sharedManager] setEnableLiveBeauty:YES];
-//    [[TuSDKManager sharedManager] setEnableLiveSticker:YES];
-    /**
-     V2TXLiveMode_RTMP 协议下在TuSDKManager.m里使用displayView渲染
-     V2TXLiveMode_RTC 协议下可以用腾讯自身的渲染，TuSDKManager里的displayView可隐藏
-     */
-    [[TuSDKManager sharedManager] configTuSDKViewWithSuperView:self.view];
-    [TuSDKManager sharedManager].pixelFormat = TuSDKPixelFormatNV12;
+    [[TTViewManager shareInstance] setBeautyTarget:[TTBeautyProxy transformObjc:[TTLiveMediator shareInstance]]];
+    [[TTViewManager shareInstance] setupSuperView:self.view];
 }
 
 - (void)dealloc {
+    [[TTLiveMediator shareInstance] destory];
+    [[TTViewManager shareInstance] destory];
     [self removeKeyboardObserver];
-    [[TuSDKManager sharedManager] destoryTuSDKConfig];
 }
 
 - (void)setupDefaultUIConfig {
@@ -113,8 +103,7 @@
     [self.livePusher startMicrophone];
     [self.customVideoCaputre startCameraCapture];
     
-//    [self.livePusher startPush:[LiveUrl generateTRTCPushUrl:streamId]];
-    [self.livePusher startPush:RTMPURL];
+    [self.livePusher startPush:[URLUtils generateTRTCPushUrl:streamId]];
 }
 
 - (void)stopPush {
@@ -139,29 +128,13 @@
 #pragma mark - CustomCameraHelperSampleBufferDelegate
 
 - (void)onVideoSampleBuffer:(CMSampleBufferRef)videoBuffer {
-    
-        
-    if (![TuSDKManager sharedManager].isInitFilterPipeline)
-    {
-        //CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(videoBuffer);
-        V2TXLiveVideoFrame *videoFrame = [[V2TXLiveVideoFrame alloc] init];
-        videoFrame.bufferType = V2TXLiveBufferTypePixelBuffer;
-        videoFrame.pixelFormat = V2TXLivePixelFormatNV12;
-        videoFrame.pixelBuffer = CMSampleBufferGetImageBuffer(videoBuffer);
-        
-        [self.livePusher sendCustomVideoFrame:videoFrame];
-    }
-    else
-    {
-        CVPixelBufferRef newPixelBuffer = [[TuSDKManager sharedManager] syncProcessSampleBuffer:videoBuffer];
-        
-        V2TXLiveVideoFrame *videoFrame = [[V2TXLiveVideoFrame alloc] init];
-        videoFrame.bufferType = V2TXLiveBufferTypePixelBuffer;
-        videoFrame.pixelFormat = V2TXLivePixelFormatNV12;
-        videoFrame.pixelBuffer = newPixelBuffer;
-        
-        [self.livePusher sendCustomVideoFrame:videoFrame];
-    }
+//    CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(videoBuffer);
+    CVPixelBufferRef newPixelBuffer = [[[TTLiveMediator shareInstance] sendVideoSampleBuffer:videoBuffer] getCVPixelBuffer];
+    V2TXLiveVideoFrame *videoFrame = [[V2TXLiveVideoFrame alloc] init];
+    videoFrame.bufferType = V2TXLiveBufferTypePixelBuffer;
+    videoFrame.pixelFormat = V2TXLivePixelFormatI420;
+    videoFrame.pixelBuffer = newPixelBuffer;
+    [self.livePusher sendCustomVideoFrame:videoFrame];
 }
 
 #pragma mark - Notification
