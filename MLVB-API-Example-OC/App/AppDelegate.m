@@ -15,7 +15,7 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    [TXLiveBase setLicenceURL:LICENSEURL key:LICENSEURLKEY];
+    [V2TXLivePremier setLicence:LICENSEURL key:LICENSEURLKEY];
     [TTLiveMediator setupWithAppKey:@"35ae2a66cce6fd38-04-ewdjn1"];
     return YES;
 }

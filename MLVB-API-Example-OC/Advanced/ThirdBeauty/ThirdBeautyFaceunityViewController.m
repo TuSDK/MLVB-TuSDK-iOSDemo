@@ -32,11 +32,10 @@
  Third-party beauty filter: https://github.com/Faceunity/FUTRTCDemo
  */
 
-#import "ThirdBeautyViewController.h"
-#import "TTLiveMediator.h"
-#import "TTViewManager.h"
+#import "ThirdBeautyFaceunityViewController.h"
+//#import "FUManager.h"
 
-@interface ThirdBeautyViewController () <V2TXLivePusherObserver>
+@interface ThirdBeautyFaceunityViewController () <V2TXLivePusherObserver>
 @property (weak, nonatomic) IBOutlet UILabel *setBeautyLabel;
 @property (weak, nonatomic) IBOutlet UILabel *beautyNumLabel;
 @property (weak, nonatomic) IBOutlet UISlider *setBeautySlider;
@@ -48,11 +47,11 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomConstraint;
 
 @property (strong, nonatomic) V2TXLivePusher *livePusher;
-@property (nonatomic, strong) EAGLContext *currentContext;
+//@property (strong, nonatomic) FUBeautyParam *beautyParam;
 
 @end
 
-@implementation ThirdBeautyViewController
+@implementation ThirdBeautyFaceunityViewController
 
 //- (FUBeautyParam *)beautyParam {
 //    if (!_beautyParam) {
@@ -75,10 +74,6 @@
     [super viewDidLoad];
     [self setupDefaultUIConfig];
     [self addKeyboardObserver];
-    
-    [[TTViewManager shareInstance] setBeautyTarget:[TTBeautyProxy transformObjc:[TTLiveMediator shareInstance]]];
-    [[TTViewManager shareInstance] setupSuperView:self.view];
-    
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -113,8 +108,8 @@
     [self.livePusher startCamera:true];
     [self.livePusher startMicrophone];
     
-//    [self.livePusher enableCustomVideoProcess:true pixelFormat:V2TXLivePixelFormatNV12 bufferType:V2TXLiveBufferTypePixelBuffer];
-    [self.livePusher enableCustomVideoProcess:true pixelFormat:V2TXLivePixelFormatTexture2D bufferType:V2TXLiveBufferTypeTexture];
+    [self.livePusher enableCustomVideoProcess:true pixelFormat:V2TXLivePixelFormatNV12 bufferType:V2TXLiveBufferTypePixelBuffer];
+    
     [self.livePusher startPush:[URLUtils generateTRTCPushUrl:streamId]];
 }
 
@@ -136,25 +131,18 @@
 
 #pragma mark - Slider ValueChange
 - (IBAction)setBeautySliderValueChange:(UISlider *)sender {
+//    self.beautyParam.mValue = sender.value;
+//    [[FUManager shareManager] filterValueChange:self.beautyParam];
     NSInteger value = sender.value * 6;
     self.beautyNumLabel.text = [NSString stringWithFormat:@"%ld",value];
 }
 
 #pragma mark - V2TXLivePusherObserver
 - (void)onProcessVideoFrame:(V2TXLiveVideoFrame *)srcFrame dstFrame:(V2TXLiveVideoFrame *)dstFrame {
-
-    if (!_currentContext) {
-        _currentContext = [EAGLContext currentContext];
-        [TTLiveMediator setupContext:_currentContext];
-        [[TTLiveMediator shareInstance] setPixelFormat:TTVideoPixelFormat_Texture2D];
-        
-    }
-    TUPFPImage *fpImage = [[TTLiveMediator shareInstance] sendVideoTexture2D:srcFrame.textureId width:(int)srcFrame.width height:(int)srcFrame.height];
-    
-    dstFrame.bufferType = V2TXLiveBufferTypeTexture;
-    dstFrame.pixelFormat = V2TXLivePixelFormatTexture2D;
-    dstFrame.textureId = [fpImage getTextureID];
-    
+//    [[FUManager shareManager] renderItemsToPixelBuffer:srcFrame.pixelBuffer];
+    dstFrame.bufferType = V2TXLiveBufferTypePixelBuffer;
+    dstFrame.pixelFormat = V2TXLivePixelFormatNV12;
+    dstFrame.pixelBuffer = srcFrame.pixelBuffer;
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
@@ -162,8 +150,7 @@
 }
 
 - (void)dealloc {
-    [[TTLiveMediator shareInstance] destory];
-    [[TTViewManager shareInstance] destory];
+//    [[FUManager shareManager] destoryItems];
     [self removeKeyboardObserver];
 }
 

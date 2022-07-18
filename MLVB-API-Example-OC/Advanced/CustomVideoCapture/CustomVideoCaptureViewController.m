@@ -30,6 +30,7 @@
 #import "CustomCameraHelper.h"
 #import "TTLiveMediator.h"
 #import "TTViewManager.h"
+
 @interface CustomVideoCaptureViewController () <CustomCameraHelperSampleBufferDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *streamIdLabel;
 @property (weak, nonatomic) IBOutlet UITextField *streamIdTextField;
@@ -46,9 +47,6 @@
 - (V2TXLivePusher *)livePusher {
     if (!_livePusher) {
         _livePusher = [[V2TXLivePusher alloc] initWithLiveMode:V2TXLiveMode_RTC];
-        [_livePusher setRenderMirror:V2TXLiveMirrorTypeEnable];
-        V2TXLiveVideoEncoderParam *param = [[V2TXLiveVideoEncoderParam alloc] initWith:(V2TXLiveVideoResolution960x540)];
-        [_livePusher setVideoQuality:param];
     }
     return _livePusher;
 }
@@ -67,16 +65,14 @@
     [self addKeyboardObserver];
     [self.customVideoCaputre checkPermission];
     [self.customVideoCaputre createSession];
+    
     [TTLiveMediator setupContext:nil];
     [[TTLiveMediator shareInstance] setPixelFormat:TTVideoPixelFormat_YUV];
-    
     [[TTViewManager shareInstance] setBeautyTarget:[TTBeautyProxy transformObjc:[TTLiveMediator shareInstance]]];
     [[TTViewManager shareInstance] setupSuperView:self.view];
 }
 
 - (void)dealloc {
-    [[TTLiveMediator shareInstance] destory];
-    [[TTViewManager shareInstance] destory];
     [self removeKeyboardObserver];
 }
 
@@ -128,13 +124,20 @@
 #pragma mark - CustomCameraHelperSampleBufferDelegate
 
 - (void)onVideoSampleBuffer:(CMSampleBufferRef)videoBuffer {
-//    CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(videoBuffer);
+    
     CVPixelBufferRef newPixelBuffer = [[[TTLiveMediator shareInstance] sendVideoSampleBuffer:videoBuffer] getCVPixelBuffer];
     V2TXLiveVideoFrame *videoFrame = [[V2TXLiveVideoFrame alloc] init];
     videoFrame.bufferType = V2TXLiveBufferTypePixelBuffer;
     videoFrame.pixelFormat = V2TXLivePixelFormatI420;
     videoFrame.pixelBuffer = newPixelBuffer;
     [self.livePusher sendCustomVideoFrame:videoFrame];
+    
+//    V2TXLiveVideoFrame *videoFrame = [[V2TXLiveVideoFrame alloc] init];
+//    videoFrame.bufferType = V2TXLiveBufferTypePixelBuffer;
+//    videoFrame.pixelFormat = V2TXLivePixelFormatNV12;
+//    videoFrame.pixelBuffer = CMSampleBufferGetImageBuffer(videoBuffer);
+//
+//    [self.livePusher sendCustomVideoFrame:videoFrame];
 }
 
 #pragma mark - Notification
