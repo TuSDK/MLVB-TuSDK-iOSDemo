@@ -33,7 +33,8 @@
  */
 
 #import "ThirdBeautyFaceunityViewController.h"
-//#import "FUManager.h"
+#import "TTLiveMediator.h"
+#import "TTViewManager.h"
 
 @interface ThirdBeautyFaceunityViewController () <V2TXLivePusherObserver>
 @property (weak, nonatomic) IBOutlet UILabel *setBeautyLabel;
@@ -47,7 +48,7 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomConstraint;
 
 @property (strong, nonatomic) V2TXLivePusher *livePusher;
-//@property (strong, nonatomic) FUBeautyParam *beautyParam;
+@property (nonatomic, strong) EAGLContext *currentContext;
 
 @end
 
@@ -108,7 +109,7 @@
     [self.livePusher startCamera:true];
     [self.livePusher startMicrophone];
     
-    [self.livePusher enableCustomVideoProcess:true pixelFormat:V2TXLivePixelFormatNV12 bufferType:V2TXLiveBufferTypePixelBuffer];
+    [self.livePusher enableCustomVideoProcess:true pixelFormat:V2TXLivePixelFormatTexture2D bufferType:V2TXLiveBufferTypeTexture];
     
     [self.livePusher startPush:[URLUtils generateTRTCPushUrl:streamId]];
 }
@@ -139,10 +140,20 @@
 
 #pragma mark - V2TXLivePusherObserver
 - (void)onProcessVideoFrame:(V2TXLiveVideoFrame *)srcFrame dstFrame:(V2TXLiveVideoFrame *)dstFrame {
-//    [[FUManager shareManager] renderItemsToPixelBuffer:srcFrame.pixelBuffer];
-    dstFrame.bufferType = V2TXLiveBufferTypePixelBuffer;
-    dstFrame.pixelFormat = V2TXLivePixelFormatNV12;
-    dstFrame.pixelBuffer = srcFrame.pixelBuffer;
+
+    if (!_currentContext) {
+        _currentContext = [EAGLContext currentContext];
+        [TTLiveMediator setupContext:_currentContext];
+        [[TTLiveMediator shareInstance] setPixelFormat:TTVideoPixelFormat_Texture2D];
+        [[TTViewManager shareInstance] setBeautyTarget:[TTBeautyProxy transformObjc:[TTLiveMediator shareInstance]]];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[TTViewManager shareInstance] setupSuperView:self.view];
+        });
+    }
+    TUPFPImage *fpImage = [[TTLiveMediator shareInstance] sendVideoTexture2D:srcFrame.textureId width:(int)srcFrame.width height:(int)srcFrame.height];
+    dstFrame.bufferType = V2TXLiveBufferTypeTexture;
+    dstFrame.pixelFormat = V2TXLivePixelFormatTexture2D;
+    dstFrame.textureId = [fpImage getTextureID];
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
@@ -150,7 +161,8 @@
 }
 
 - (void)dealloc {
-//    [[FUManager shareManager] destoryItems];
+    [[TTLiveMediator shareInstance] destory];
+    [[TTViewManager shareInstance] destory];
     [self removeKeyboardObserver];
 }
 
