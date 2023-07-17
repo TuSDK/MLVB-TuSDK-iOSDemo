@@ -76,6 +76,25 @@ Demo提供的`TTBeauty、TTResource、TTView`文件集成方式。该集成方�
 
 8、注意 ：在`Project` -> `Targets` -> `General` -> `Frameworks,Libraries,andEmbedded Content` 设置中，需要把`TuCamera.framework` 、 `TuViews.framework`、`TuSDKPulseFilter.framework`、 `TuSDKPulse.framework`和`TuSDKPulseCore.framework` 的属性置为`Embed & Sign`
 
+### 3、文件目录
+
+```
+├─ MLVB-API-Example-OC        // MLVB API Example，包括直播推流，直播播放，互动直播
+|  ├─ App                     // 程序入口界面
+|  ├─ TTBeauty                // 特效处理示例代码
+|  ├─ TTResource              // TuSDK 相关资源文件
+|  |  ├─ Localized            // 国际化文件
+|  |  ├─ Thumbnails           // 封面图资源
+|  |  ├─ TuSDK                // SDK
+|  |  ├─ TuSDKPulse.bundle    // 资源文件
+|  ├─ TTView                  // UI
+|  |  ├─ BaseViews            // 工具类UI代码
+|  |  ├─ Beauty               // 美颜代码(美肤、微整形、美妆)
+|  |  ├─ Filter               // 滤镜代码
+|  |  ├─ Model                // UI中引用的数据类
+|  |  ├─ Sticker              // 动态贴纸代码
+```
+
 ## 三、示例代码
 
 ```objective-c
