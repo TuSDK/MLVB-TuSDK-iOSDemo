@@ -1,26 +1,26 @@
 
 # 腾讯云移动直播外部滤镜 TuSDK 功能操作说明
 
-## 1.文件构成
+## 一、文件构成
 
-### 1.包名
+### 1、包名
 
 iOS 应用的包名是 Bundle Identifier，它定义在 Project Target 中的 Bundle Identifier。
 
-### 2.秘钥（AppKey）
+### 2、秘钥（AppKey）
 
 * 替换 TuSDK 初始化中的秘钥（AppKey），`AppDelegate.m`中引入 `#import "TTLiveMediator.h"`。
 * 进行初始化 `[TTLiveMediator setupWithAppKey:@""];`;
 * appKey 需要在控制台申请，控制台使用说明请参考[官方文档](https://tutucloud.com/docs/quick-start/console-guide)
 
-### 3.资源文件
+### 3、资源文件
 
 * 提供的压缩包中会有 **package_XXXXXX.zip** 文件。
 * 解压缩该文件后会有，滤镜、特效资源：*other*、*texture*，贴纸资源：*sticker* 文件。
 * *other* 和 *texture*  这两个是必要文件，*sticker*有动态贴纸服务才会出现。
 
 
-## 4.文件替换操作
+### 4、文件替换操作
 
 * 替换 AppKey 至 TuSDK init 初始化方法中秘钥（AppKey）。
 * 将解压缩后的文件替换 **TuSDKPulse.bundle**  文件中的对应文件。
@@ -35,15 +35,15 @@ iOS 应用的包名是 Bundle Identifier，它定义在 Project Target 中的 Bu
 （4）textures 文件夹，包含打包到本地使用的滤镜的资源文件，进行资源文件操作是需要进行替换。
 
 
-## 2.项目集成、配置
-### 1.集成方式：
-一、Demo提供的`TTBeauty、TTResource、TTView`文件集成方式。该集成方式中`TTLiveMediator`封装了对滤镜、贴纸、美颜功能的实现，客户通过一些简单方法就可以快速实现并使用滤镜、贴纸、美颜功能。
+## 二、项目集成、配置
+### 1、集成方式：
+Demo提供的`TTBeauty、TTResource、TTView`文件集成方式。该集成方式中`TTLiveMediator`封装了对滤镜、贴纸、美颜功能的实现，客户通过一些简单方法就可以快速实现并使用滤镜、贴纸、美颜功能。
 
 * 将Demo中的`TTLiveMediator` 文件夹引入即可，`Localized` 文件需要获取Demo 中的`VideoDemo.strings` 和 `TuSDKConstants.strings`
 
-二、如下的集成方式：**（客户需自定义该功能的UI、逻辑等处理时，建议使用该方式，下面的内容都是介绍该方式的）**
+如下的集成方式：**（客户需自定义该功能的UI、逻辑等处理时，建议使用该方式，下面的内容都是介绍该方式的）**
 
-1、将示例工程源码中以下文件拖入到 Xcode 项目中
+1.1、将示例工程源码中以下文件拖入到 Xcode 项目中
 
 * `TuSDKPulseFilter.framework`：特效处理库
 * `TuSDKPulse.framework`：核心库
@@ -56,9 +56,9 @@ iOS 应用的包名是 Bundle Identifier，它定义在 Project Target 中的 Bu
 * `resource`:`Constants.h`为宏定义索引。
 * `Views`:包含TuSDK的滤镜、贴纸、微整形功能板块等视图文件
 
-2、勾选 **Copy items if needed**，点击 **Finish**。
+1.2、勾选 **Copy items if needed**，点击 **Finish**。
 
-### 2.项目配置
+### 2、项目配置
 
 1、打开 app target，查看 **Build Settings** 中的 **Linking** - **Other Linker Flags** 选项，确保含有 `-ObjC` 一值，若没有则添加。用户使用 Cocoapods 进行了第三方依赖库管理，需要在 `-ObjC` 前添加 `$(inherited)`。`目前直播 SDK 暂不支持 Cocoapods`。
 
@@ -76,20 +76,51 @@ iOS 应用的包名是 Bundle Identifier，它定义在 Project Target 中的 Bu
 
 8、注意 ：在`Project` -> `Targets` -> `General` -> `Frameworks,Libraries,andEmbedded Content` 设置中，需要把`TuCamera.framework` 、 `TuViews.framework`、`TuSDKPulseFilter.framework`、 `TuSDKPulse.framework`和`TuSDKPulseCore.framework` 的属性置为`Embed & Sign`
 
+## 三、示例代码
 
-## 3.自定义集成方式（项目集成、配置的方式二）
+```objective-c
+#pragma mark - V2TXLivePusherObserver
+- (void)onProcessVideoFrame:(V2TXLiveVideoFrame *)srcFrame dstFrame:(V2TXLiveVideoFrame *)dstFrame {
 
-### 1.TuSDK 的初始化
+    if (!_currentContext) {
+        _currentContext = [EAGLContext currentContext];
+        [TTLiveMediator setupContext:_currentContext];
+        [[TTLiveMediator shareInstance] setPixelFormat:TTVideoPixelFormat_Texture2D];
+        [[TTViewManager shareInstance] setBeautyTarget:[TTBeautyProxy transformObjc:[TTLiveMediator shareInstance]]];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[TTViewManager shareInstance] setupSuperView:self.view];
+        });
+    }
+    TUPFPImage *fpImage = [[TTLiveMediator shareInstance] sendVideoTexture2D:srcFrame.textureId width:(int)srcFrame.width height:(int)srcFrame.height];
+    dstFrame.bufferType = V2TXLiveBufferTypeTexture;
+    dstFrame.pixelFormat = V2TXLivePixelFormatTexture2D;
+    dstFrame.textureId = [fpImage getTextureID];
+}
 
-1、在`AppDelegate.m`引入头文件 `#import <TuSDKPulseCore/TuSDKPulseCore.h>` 和 `#import <TuSDKPulse/TUPEngine.h>`。
+- (void)dealloc {
+  	//资源销毁
+    [[TTLiveMediator shareInstance] destory];
+    [[TTViewManager shareInstance] destory];
+}
+```
 
-2、在 `AppDelegate.m` 的 `didFinishLaunchingWithOptions`方法中添加初始化代码，用户如果需求同一应用不同版本发布，可以参考文档[如何使用多个masterkey](https://tutucloud.com/docs/image-ios-faq/masterkey)
+
+
+
+## 四、自定义集成方式（项目集成、配置的方式二）
+
+### 1、TuSDK 的初始化
+
+1.1、在`AppDelegate.m`引入头文件 `#import <TuSDKPulseCore/TuSDKPulseCore.h>` 和 `#import <TuSDKPulse/TUPEngine.h>`。
+
+1.2、在 `AppDelegate.m` 的 `didFinishLaunchingWithOptions`方法中添加初始化代码，用户如果需求同一应用不同版本发布，可以参考文档[如何使用多个masterkey](https://tutucloud.com/docs/image-ios-faq/masterkey)
+
 ```
 [TUCCore initSdkWithAppKey:appKey];
 [TUPEngine Init:nil];
 ```
 
-3、为便于开发，可打开 TuSDK 的调试日志，在初始化方法的同一位置添加以下代码：`[TUCCore setLogLevel:TuLogLevelDEBUG];`发布应用时请关闭日志。
+1.3、为便于开发，可打开 TuSDK 的调试日志，在初始化方法的同一位置添加以下代码：`[TUCCore setLogLevel:TuLogLevelDEBUG];`发布应用时请关闭日志。
 
 ``` objective-c
     - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -105,7 +136,7 @@ iOS 应用的包名是 Bundle Identifier，它定义在 Project Target 中的 Bu
     }
 ```
 
-4、资源释放，需要在应用程序关闭的时候释放资源`[TUPEngine Terminate];`
+1.4、资源释放，需要在应用程序关闭的时候释放资源`[TUPEngine Terminate];`
 
 ```
 - (void)applicationWillTerminate:(UIApplication *)application {
@@ -114,7 +145,7 @@ iOS 应用的包名是 Bundle Identifier，它定义在 Project Target 中的 Bu
 }
 ```
 
-### 2.TUPFilterPipe 的使用
+### 2、TUPFilterPipe 的使用
 
 TUPFilterPipe 是视频滤镜处理 API 的接口，处理的是视频 帧buffer 数据
 
