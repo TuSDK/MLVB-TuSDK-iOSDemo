@@ -9,8 +9,8 @@ iOS 应用的包名是 Bundle Identifier，它定义在 Project Target 中的 Bu
 
 ### 2.秘钥（AppKey）
 
-* 替换 TuSDK 初始化中的秘钥（AppKey），`AppDelegate.m`中引入 #import "TuSDKManager.h"。
-* 进行初始化 `[[TuSDKManager sharedManager] initSdkWithAppKey:TuSDKAPPKET];`;
+* 替换 TuSDK 初始化中的秘钥（AppKey），`AppDelegate.m`中引入 `#import "TTLiveMediator.h"`。
+* 进行初始化 `[TTLiveMediator setupWithAppKey:@""];`;
 * appKey 需要在控制台申请，控制台使用说明请参考[官方文档](https://tutucloud.com/docs/quick-start/console-guide)
 
 ### 3.资源文件
@@ -37,16 +37,14 @@ iOS 应用的包名是 Bundle Identifier，它定义在 Project Target 中的 Bu
 
 ## 2.项目集成、配置
 ### 1.集成方式：
-一、Demo提供的TuSDKManager文件集成方式。该集成方式中TuSDKManager封装了对滤镜、贴纸、美颜功能的实现，客户通过一些简单方法就可以快速实现并使用滤镜、贴纸、美颜功能。
+一、Demo提供的`TTBeauty、TTResource、TTView`文件集成方式。该集成方式中`TTLiveMediator`封装了对滤镜、贴纸、美颜功能的实现，客户通过一些简单方法就可以快速实现并使用滤镜、贴纸、美颜功能。
 
-* 将Demo中的`TuSDKManager` 文件夹引入即可，`Localized` 文件需要获取Demo 中的`VideoDemo.strings` 和 `TuSDKConstants.strings`
+* 将Demo中的`TTLiveMediator` 文件夹引入即可，`Localized` 文件需要获取Demo 中的`VideoDemo.strings` 和 `TuSDKConstants.strings`
 
 二、如下的集成方式：**（客户需自定义该功能的UI、逻辑等处理时，建议使用该方式，下面的内容都是介绍该方式的）**
 
 1、将示例工程源码中以下文件拖入到 Xcode 项目中
 
-* `TuCamera.framework` ：核心库相机库
-* `TuViews.framework`：核心库视图库
 * `TuSDKPulseFilter.framework`：特效处理库
 * `TuSDKPulse.framework`：核心库
 * `TuSDKPulseCore.framework`：核心库
@@ -108,6 +106,7 @@ iOS 应用的包名是 Bundle Identifier，它定义在 Project Target 中的 Bu
 ```
 
 4、资源释放，需要在应用程序关闭的时候释放资源`[TUPEngine Terminate];`
+
 ```
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
