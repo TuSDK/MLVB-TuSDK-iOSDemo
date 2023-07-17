@@ -46,7 +46,7 @@
 
 - (V2TXLivePusher *)livePusher {
     if (!_livePusher) {
-        _livePusher = [[V2TXLivePusher alloc] initWithLiveMode:V2TXLiveMode_RTC];
+        _livePusher = [[V2TXLivePusher alloc] initWithLiveMode:V2TXLiveMode_RTMP];
     }
     return _livePusher;
 }

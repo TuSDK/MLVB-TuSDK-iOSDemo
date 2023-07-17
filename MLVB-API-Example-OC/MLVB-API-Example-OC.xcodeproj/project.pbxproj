@@ -1760,22 +1760,22 @@
 		A6C41334288547070087993D /* Beauty */ = {
 			isa = PBXGroup;
 			children = (
-				A6C41335288547070087993D /* TTFacePlasticPanelView.m */,
 				A6C41336288547070087993D /* TTBeautyPanelView.h */,
-				A6C41337288547070087993D /* TTFaceSkinPanelViewCell.h */,
-				A6C41338288547070087993D /* TTFaceSkinPanelView.m */,
-				A6C41339288547070087993D /* TuCosmeticPanelViewCell.h */,
-				A6C4133A288547070087993D /* TTFacePlasticPanelViewCell.h */,
-				A6C4133B288547070087993D /* TuBeautyPanelConfig.h */,
-				A6C4133C288547070087993D /* TTCosmeticPanelView.h */,
-				A6C4133D288547070087993D /* TTFacePlasticPanelView.h */,
 				A6C4133E288547070087993D /* TTBeautyPanelView.m */,
-				A6C4133F288547070087993D /* TTFacePlasticPanelViewCell.m */,
-				A6C41340288547070087993D /* TuCosmeticPanelViewCell.m */,
-				A6C41341288547070087993D /* TTFaceSkinPanelView.h */,
-				A6C41342288547070087993D /* TTFaceSkinPanelViewCell.m */,
+				A6C4133C288547070087993D /* TTCosmeticPanelView.h */,
 				A6C41343288547070087993D /* TTCosmeticPanelView.m */,
+				A6C4133D288547070087993D /* TTFacePlasticPanelView.h */,
+				A6C41335288547070087993D /* TTFacePlasticPanelView.m */,
+				A6C4133A288547070087993D /* TTFacePlasticPanelViewCell.h */,
+				A6C4133F288547070087993D /* TTFacePlasticPanelViewCell.m */,
+				A6C41341288547070087993D /* TTFaceSkinPanelView.h */,
+				A6C41338288547070087993D /* TTFaceSkinPanelView.m */,
+				A6C41337288547070087993D /* TTFaceSkinPanelViewCell.h */,
+				A6C41342288547070087993D /* TTFaceSkinPanelViewCell.m */,
+				A6C4133B288547070087993D /* TuBeautyPanelConfig.h */,
 				A6C41344288547070087993D /* TuBeautyPanelConfig.m */,
+				A6C41339288547070087993D /* TuCosmeticPanelViewCell.h */,
+				A6C41340288547070087993D /* TuCosmeticPanelViewCell.m */,
 			);
 			path = Beauty;
 			sourceTree = "<group>";
